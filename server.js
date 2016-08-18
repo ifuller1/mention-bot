@@ -368,7 +368,7 @@ app.post('/', function(req, res) {
 app.get('/', function(req, res) {
   res.send(
     'GitHub Mention Bot Active. ' +
-    'Go to https://github.com/facebook/mention-bot for more information.'
+    'Go to https://github.com/trailsuite/mention-bot for more information.'
   );
 });
 
