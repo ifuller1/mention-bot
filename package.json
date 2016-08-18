@@ -4,12 +4,21 @@
   "license": "BSD-3-Clause",
   "repository": "facebook/mention-bot",
   "scripts": {
-    "test": "flow && jest",
-    "start": "node run-server.js"
+     "test": "flow && jest",
+     "start": "node run-server.js",
+     "watch": "npm-watch"
   },
   "main": "./run-mention-bot.js",
   "engines": {
     "node": ">=4"
+  },
+  "watch": {
+    "test": {
+      "patterns": ["**"],
+      "extensions": "js",
+      "ignore": "node_modules/**",
+      "quiet": true
+    }
   },
   "jest": {
     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
@@ -33,6 +42,7 @@
     "github": "^2.1.0",
     "jest-cli": "^0.7.1",
     "minimatch": "^3.0.0",
-    "node-schedule": "^1.0.0"
+    "node-schedule": "^1.0.0",
+    "npm-watch": "0.1.6"
   }
 }
