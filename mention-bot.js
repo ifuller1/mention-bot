@@ -547,7 +547,9 @@ async function prSize(
   var files = parseDiff(diff);
 
   let changes = files
-    .reduce((previousValue, file) => file.deletedLines.length + file.createdLines.length
+    .reduce(function(previousValue, file) {
+      return file.deletedLines.length + file.createdLines.length + previousValue
+    }
     ,0);
 
   return changes;
