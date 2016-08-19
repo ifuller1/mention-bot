@@ -161,7 +161,7 @@ async function work(body) {
     }
   }
 
-  function isValid(repoConfig, data) {
+  async function isValid(repoConfig, data) {
     if(repoConfig.maximumPRSize) {
       let prSize = await mentionBot.prSize(
         data.repository.html_url,
@@ -247,7 +247,7 @@ async function work(body) {
     return true;
   }
 
-  if (!isValid(repoConfig, data)) {
+  if (! await isValid(repoConfig, data)) {
     return;
   }
 
