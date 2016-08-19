@@ -17,8 +17,8 @@ var mentionBot = require('./mention-bot.js');
 var messageGenerator = require('./message.js');
 var util = require('util');
 var schedule = require('./schedule.js');
-
 var GitHubApi = require('github');
+var serverSupport = require('./server-support.js');
 
 var CONFIG_PATH = '.mention-bot';
 
@@ -132,6 +132,9 @@ async function work(body) {
     skipTitle: '',
     withLabel: '',
     skipCollaboratorPR: false,
+    maximumPRSize: 0,
+    maximumPRSizeMessage: "Thanks! Unfortunately your PR has @totalChanges changes which is more than the \
+        recommended @maximumPRSize changes. Please consider decomposing and resubmitting."
   };
 
   try {
@@ -155,7 +158,32 @@ async function work(body) {
     }
   }
 
-  function isValid(repoConfig, data) {
+  async function isValid(repoConfig, data) {
+    if(repoConfig.maximumPRSize) {
+      let prSize = await mentionBot.prSize(
+        data.repository.html_url,
+        data.pull_request.number,
+        repoConfig
+      )
+
+      if(prSize > repoConfig.maximumPRSize) {
+        createComment(data, repoConfig.maximumPRSizeMessage
+          .replace(
+            new RegExp("@maximumPRSize","g"),
+            repoConfig.maximumPRSize.toString()
+          )
+          .replace(
+            new RegExp("@totalChanges","g"),
+            prSize.toString()
+          )
+        );
+
+        serverSupport.closePr(github, data);
+
+        return false;
+      }
+    }
+
     if (repoConfig.actions.indexOf(data.action) === -1) {
       console.log(
         'Skipping because action is ' + data.action + '.',
@@ -216,7 +244,7 @@ async function work(body) {
     return true;
   }
 
-  if (!isValid(repoConfig, data)) {
+  if (! await isValid(repoConfig, data)) {
     return;
   }
 
