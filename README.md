@@ -51,10 +51,46 @@ The bot can be configured by adding a `.mention-bot` file to the base directory 
   "delayed": false, // mention-bot will wait to comment until specified time in `delayedUntil` value
   "delayedUntil": "3d", // Used if delayed is equal true, permitted values are: minutes, hours, or days, e.g.: '3 days', '40 minutes', '1 hour', '3d', '1h', '10m'
   "skipCollaboratorPR": false, // mention-bot will ignore if PR is made by collaborator
+  "maximumPRSize": 0, // If a PRs created and deleted lines is greater than this number the PR will be closed. 0 is off.
+  "maximumPRSizeMessage": "Thanks! Unfortunately your PR has @totalChanges changes which is more than the \
+      recommended @maximumPRSize changes. Please consider decomposing and resubmitting."
 }
 ```
 
 The glob matching is an extended form of glob syntax performed by [`minimatch`](https://github.com/isaacs/minimatch), with the default options; read [the `minimatch` README](https://github.com/isaacs/minimatch/blob/master/README.md) for more details.
+
+The following default config:
+
+```js
+{
+  maxReviewers: 3,
+  numFilesToCheck: 5,
+  userBlacklist: [],
+  userBlacklistForPR: [],
+  userWhitelist: [],
+  fileBlacklist: [],
+  requiredOrgs: [],
+  findPotentialReviewers: true,
+  actions: ['opened'],
+  skipAlreadyAssignedPR: false,
+  skipAlreadyMentionedPR: false,
+  delayed: false,
+  delayedUntil: '3d',
+  assignToReviewer: false,
+  skipTitle: '',
+  withLabel: '',
+  skipCollaboratorPR: false,
+};
+```
+
+Can be overridden via environment config. e.g.:
+
+```zsh
+MAX_REVIEWERS=2
+DELAYED=true
+USER_BLACKLIST="user1,user2"
+```
+---
 
 ## How Does It Work?
 
