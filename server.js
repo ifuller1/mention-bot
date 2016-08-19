@@ -18,8 +18,8 @@ var messageGenerator = require('./message.js');
 var util = require('util');
 var schedule = require('./schedule.js');
 var environment = require('./environment.js').environment;
-
 var GitHubApi = require('github');
+var serverSupport = require('./server-support.js');
 
 var CONFIG_PATH = '.mention-bot';
 
@@ -133,6 +133,9 @@ async function work(body) {
     skipTitle: '',
     withLabel: '',
     skipCollaboratorPR: false,
+    maximumPRSize: 0,
+    maximumPRSizeMessage: "Thanks! Unfortunately your PR has @totalChanges changes which is more than the \
+        recommended @maximumPRSize changes. Please consider decomposing and resubmitting."
   };
 
   repoConfig = environment.checkEnvironmentForConfig(repoConfig);
@@ -326,6 +329,31 @@ async function work(body) {
         console.log('Skipping because there is already existing an exact mention.');
         return;
       }
+    }
+  }
+
+  if(repoConfig.maximumPRSize) {
+    let prSize = await mentionBot.prSize(
+      data.repository.html_url,
+      data.pull_request.number,
+      repoConfig
+    )
+
+    if(prSize > repoConfig.maximumPRSize) {
+      createComment(data, repoConfig.maximumPRSizeMessage
+        .replace(
+          new RegExp("@maximumPRSize","g"),
+          repoConfig.maximumPRSize.toString()
+        )
+        .replace(
+          new RegExp("@totalChanges","g"),
+          prSize.toString()
+        )
+      );
+
+      serverSupport.closePr(github, data);
+
+      return;
     }
   }
 
