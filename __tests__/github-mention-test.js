@@ -395,7 +395,7 @@ describe('Github Mention', function() {
         largePR.repoName,
         largePR.prNumber
       ).then(function (prSize) {
-        expect(prSize).toEqual(207);
+        expect(prSize).toEqual(281);
       });
     });
   });
