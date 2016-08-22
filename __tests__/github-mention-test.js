@@ -390,7 +390,7 @@ describe('Github Mention', function() {
 
     pit('returns the sum of createdLines and deletedLines', function() {
       mentionBot.enableCachingForDebugging = true;
-      console.log("about to check large PR")
+      
       return mentionBot.prSize(
         largePR.repoName,
         largePR.prNumber
