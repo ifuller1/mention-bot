@@ -17,6 +17,7 @@ var mentionBot = require('./mention-bot.js');
 var messageGenerator = require('./message.js');
 var util = require('util');
 var schedule = require('./schedule.js');
+var environment = require('./environment.js');
 
 var GitHubApi = require('github');
 
@@ -134,6 +135,8 @@ async function work(body) {
     skipCollaboratorPR: false,
   };
 
+  repoConfig = environment.checkEnvironmentForConfig(repoConfig);
+
   try {
     // request config from repo
     var configRes = await getRepoConfig({
@@ -149,10 +152,10 @@ async function work(body) {
   } catch (e) {
     if (e.code === 404 &&
         e.message === '{"message":"Not Found","documentation_url":"https://developer.github.com/v3"}') {
-      console.log('Skipping because the repo is not visible from mention-bot.');
-      return;
+      console.log('Couldn\'t find ' + CONFIG_PATH + ' in repo. Continuing with default configuration.');
+    } else {
+      console.error(e);
     }
-    console.error(e);
   }
 
   function isValid(repoConfig, data) {
@@ -356,7 +359,12 @@ async function work(body) {
 
 app.post('/', function(req, res) {
   req.pipe(bl(function(err, body) {
-    work(body).then(function() { res.end(); });
+    work(body)
+      .then(function() { res.end(); })
+      .catch(function(e) {
+        console.error(e.stack);
+        res.status(500).send('Internal Server Error');
+      });
   }));
 });
 
