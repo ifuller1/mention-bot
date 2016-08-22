@@ -139,6 +139,8 @@ async function work(body) {
   };
 
   repoConfig = environment.checkEnvironmentForConfig(repoConfig);
+  
+  console.log(repoConfig);
 
   try {
     // request config from repo
